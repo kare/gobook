@@ -69,6 +69,6 @@ do
     cd $dir
     echo building $dir...
     rm -f $dir
-    go build
+    go install
     cd ..
 done
