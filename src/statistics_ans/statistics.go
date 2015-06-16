@@ -1,4 +1,4 @@
-// Copyright © 2010-12 Qtrac Ltd.
+// Copyright © 2010-13 Qtrac Ltd.
 // 
 // This program or package and any associated files are licensed under the
 // Apache License, Version 2.0 (the "License"); you may not use these files
@@ -139,12 +139,22 @@ func mode(numbers []float64) (modes []float64) {
             modes = append(modes, x)
         }
     }
-    if highestFrequency == 1 || len(modes) == len(numbers) {
+    if highestFrequency == 1 || len(modes) == len(frequencies) {
         modes = modes[:0] // Or: modes = []float64{}
     }
     sort.Float64s(modes)
     return modes
 }
+/*  mode:
+    numbers                               expected 
+    [1, 2, 3, 4, 5, 6]                    []     
+    [1, 2, 2, 3, 3, 3, 4, 4, 5]           [3]    
+    [9, 9, 9]                             []     
+    [1, 1, 2, 2]                          []     
+    [2, 2, 2, 4, 4, 4, 8, 8]              [2, 4] 
+    [1, 3, 6, 6, 6, 6, 7, 7, 12, 12, 17]  [6]    
+    [1, 1, 2, 4, 4]                       [1, 4] 
+*/
 
 func stdDev(numbers []float64, mean float64) float64 {
     total := 0.0

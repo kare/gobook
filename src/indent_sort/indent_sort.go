@@ -1,4 +1,4 @@
-// Copyright © 2011-12 Qtrac Ltd.
+// Copyright © 2011-14 Qtrac Ltd.
 // 
 // This program or package and any associated files are licensed under the
 // Apache License, Version 2.0 (the "License"); you may not use these files
@@ -64,6 +64,7 @@ func SortedIndentedStrings(slice []string) []string {
 
 func populateEntries(slice []string) Entries {
     indent, indentSize := computeIndent(slice)
+    fmt.Printf("[%s] %d = %d\n", indent, len(indent), indentSize)
     entries := make(Entries, 0)
     for _, item := range slice {
         i, level := 0, 0
@@ -83,6 +84,7 @@ func computeIndent(slice []string) (string, int) {
             whitespace := rune(item[0])
             for i, char := range item[1:] {
                 if char != whitespace {
+                    i++
                     return strings.Repeat(string(whitespace), i), i
                 }
             }
