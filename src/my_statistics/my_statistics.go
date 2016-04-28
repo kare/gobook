@@ -16,6 +16,7 @@ package main
 import (
 	"fmt"
 	"log"
+	"math"
 	"net/http"
 	"sort"
 	"strconv"
@@ -40,6 +41,8 @@ type statistics struct {
 	numbers []float64
 	mean    float64
 	median  float64
+	mode    []float64
+	stdev   float64
 }
 
 func main() {
@@ -90,7 +93,9 @@ func formatStats(stats statistics) string {
 <tr><td>Count</td><td>%d</td></tr>
 <tr><td>Mean</td><td>%f</td></tr>
 <tr><td>Median</td><td>%f</td></tr>
-</table>`, stats.numbers, len(stats.numbers), stats.mean, stats.median)
+<tr><td>Mode</td><td>%f</td></tr>
+<tr><td>Std. Dev</td><td>%f</td></tr>
+</table>`, stats.numbers, len(stats.numbers), stats.mean, stats.median, stats.mode, stats.stdev)
 }
 
 func getStats(numbers []float64) (stats statistics) {
@@ -98,6 +103,8 @@ func getStats(numbers []float64) (stats statistics) {
 	sort.Float64s(stats.numbers)
 	stats.mean = sum(numbers) / float64(len(numbers))
 	stats.median = median(numbers)
+	stats.mode = mode(numbers)
+	stats.stdev = stdev(numbers, stats.mean)
 	return stats
 }
 
@@ -115,4 +122,48 @@ func median(numbers []float64) float64 {
 		result = (result + numbers[middle-1]) / 2
 	}
 	return result
+}
+
+func stdev(numbers []float64, median float64) float64 {
+	var numerator float64
+	for _, number := range numbers {
+		numerator += math.Pow(number-median, 2)
+	}
+	denominator := float64(len(numbers) - 1)
+	result := math.Sqrt(numerator / denominator)
+	return result
+}
+
+func mode(numbers []float64) []float64 {
+	numberFrequencies := make(map[float64]int)
+	modeValues := make([]float64, 0)
+	var highestFrequency int
+
+	for _, number := range numbers {
+		frequency := increment(numberFrequencies, number)
+		if frequency > highestFrequency {
+			highestFrequency = frequency
+		}
+	}
+
+	for k, _ := range numberFrequencies {
+		if numberFrequencies[k] == highestFrequency {
+			modeValues = append(modeValues, k)
+		}
+	}
+
+	if len(modeValues) == len(numbers) {
+		return nil
+	} else {
+		return modeValues
+	}
+}
+
+func increment(m map[float64]int, number float64) int {
+	_, ok := m[number]
+	if !ok {
+		m[number] = 1
+	}
+	m[number]++
+	return m[number]
 }
