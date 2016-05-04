@@ -23,6 +23,13 @@ import (
 	"strings"
 )
 
+const (
+	PLS_TYPE   = "pls"
+	M3U_TYPE   = "m3u"
+	M3U_SUFFIX = "." + M3U_TYPE
+	PLS_SUFFIX = "." + PLS_TYPE
+)
+
 type Song struct {
 	Title    string
 	Filename string
@@ -38,11 +45,37 @@ func main() {
 		os.Exit(1)
 	}
 
-	if rawBytes, err := ioutil.ReadFile(os.Args[1]); err != nil {
+	if rawBytes, err := ioutil.ReadFile(filename); err != nil {
 		log.Fatal(err)
 	} else {
-		songs := readM3uPlaylist(string(rawBytes))
+		songs := readPlaylist(ingressPlaylistType(filename), string(rawBytes))
+		writePlaylist(ingressPlaylistType(filename), songs)
+	}
+}
+
+func readPlaylist(playlistType string, data string) (songs []Song) {
+	if playlistType == M3U_TYPE {
+		songs = readM3uPlaylist(data)
+	} else {
+		// PLS parsing
+
+	}
+	return
+}
+
+func writePlaylist(playlistType string, songs []Song) {
+	if playlistType == M3U_TYPE {
 		writePlsPlaylist(songs)
+	} else {
+		// M3U writing
+	}
+}
+
+func ingressPlaylistType(filename string) string {
+	if strings.HasSuffix(filename, PLS_SUFFIX) {
+		return PLS_TYPE
+	} else {
+		return M3U_TYPE
 	}
 }
 
