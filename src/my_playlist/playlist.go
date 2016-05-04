@@ -30,8 +30,11 @@ type Song struct {
 }
 
 func main() {
-	if len(os.Args) == 1 || !strings.HasSuffix(os.Args[1], ".m3u") {
-		fmt.Printf("usage: %s <file.m3u>\n", filepath.Base(os.Args[0]))
+	filename := os.Args[1]
+	if len(os.Args) == 1 ||
+		(!strings.HasSuffix(filename, M3U_SUFFIX) &&
+			!strings.HasSuffix(filename, PLS_SUFFIX)) {
+		fmt.Printf("usage: %s <file.[pls|m3u]>\n", filepath.Base(os.Args[0]))
 		os.Exit(1)
 	}
 
