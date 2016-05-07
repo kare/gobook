@@ -57,8 +57,7 @@ func readPlaylist(playlistType string, data string) (songs []Song) {
 	if playlistType == M3U_TYPE {
 		songs = readM3uPlaylist(data)
 	} else {
-		// PLS parsing
-
+		songs = readPlsPlaylist(data)
 	}
 	return
 }
@@ -67,6 +66,7 @@ func writePlaylist(playlistType string, songs []Song) {
 	if playlistType == M3U_TYPE {
 		writePlsPlaylist(songs)
 	} else {
+		fmt.Println(songs)
 		// M3U writing
 	}
 }
@@ -91,6 +91,28 @@ func readM3uPlaylist(data string) (songs []Song) {
 		} else {
 			song.Filename = strings.Map(mapPlatformDirSeparator, line)
 		}
+		if song.Filename != "" && song.Title != "" && song.Seconds != 0 {
+			songs = append(songs, song)
+			song = Song{}
+		}
+	}
+	return songs
+}
+
+func readPlsPlaylist(data string) (songs []Song) {
+	var song Song
+	lines := strings.Split(data, "\n")
+	for i, line := range lines {
+		line = strings.TrimSpace(line)
+		if i%3 != 1 || line == "" || line == "[playlist]" ||
+			strings.HasPrefix(line, "NumberOfEntries") ||
+			strings.HasPrefix(line, "Version") {
+			continue
+		}
+		unmappedFilename := strings.Split(line, "=")[1]
+		song.Filename = strings.Map(mapPlatformDirSeparator, unmappedFilename)
+		song.Title = strings.Split(lines[i+1], "=")[1]
+		song.Seconds, _ = strconv.Atoi(strings.Split(lines[i+2], "=")[1])
 		if song.Filename != "" && song.Title != "" && song.Seconds != 0 {
 			songs = append(songs, song)
 			song = Song{}
