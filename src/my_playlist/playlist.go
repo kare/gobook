@@ -66,8 +66,7 @@ func writePlaylist(playlistType string, songs []Song) {
 	if playlistType == M3U_TYPE {
 		writePlsPlaylist(songs)
 	} else {
-		fmt.Println(songs)
-		// M3U writing
+		writeM3uPlaylist(songs)
 	}
 }
 
@@ -154,4 +153,12 @@ func writePlsPlaylist(songs []Song) {
 		fmt.Printf("Length%d=%d\n", i, song.Seconds)
 	}
 	fmt.Printf("NumberOfEntries=%d\nVersion=2\n", len(songs))
+}
+
+func writeM3uPlaylist(songs []Song) {
+	fmt.Println("#EXTM3U")
+	for _, song := range songs {
+		fmt.Printf("#EXTINF:%d,%s\n", song.Seconds, song.Title)
+		fmt.Printf("%s\n", song.Filename)
+	}
 }
