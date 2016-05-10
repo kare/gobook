@@ -22,9 +22,29 @@ import (
 
 func TestReadM3uPlaylist(t *testing.T) {
 	log.SetFlags(0)
-	log.Println("TEST m3u2pls")
+	log.Println("TEST my_playlist")
 
 	songs := readM3uPlaylist(M3U)
+	for i, song := range songs {
+		if song.Title != ExpectedSongs[i].Title {
+			t.Fatalf("%q != %q", song.Title, ExpectedSongs[i].Title)
+		}
+		if song.Filename != ExpectedSongs[i].Filename {
+			t.Fatalf("%q != %q", song.Filename,
+				ExpectedSongs[i].Filename)
+		}
+		if song.Seconds != ExpectedSongs[i].Seconds {
+			t.Fatalf("%d != %d", song.Seconds,
+				ExpectedSongs[i].Seconds)
+		}
+	}
+}
+
+func TestReadPlsPlaylist(t *testing.T) {
+	log.SetFlags(0)
+	log.Println("TEST my_playlist")
+
+	songs := readPlsPlaylist(PLS)
 	for i, song := range songs {
 		if song.Title != ExpectedSongs[i].Title {
 			t.Fatalf("%q != %q", song.Title, ExpectedSongs[i].Title)
@@ -55,7 +75,27 @@ func TestWritePlsPlaylist(t *testing.T) {
 		t.Fatal(err)
 	}
 	reader.Close()
-	if string(actual) != ExpectedPls {
+	if string(actual) != PLS {
+		t.Fatal("actual != expected")
+	}
+}
+
+func TestWriteM3uPlaylist(t *testing.T) {
+	songs := readPlsPlaylist(PLS)
+	var err error
+	reader, writer := os.Stdin, os.Stdout
+	if reader, writer, err = os.Pipe(); err != nil {
+		t.Fatal(err)
+	}
+	os.Stdout = writer
+	writePlsPlaylist(songs)
+	writer.Close()
+	actual, err := ioutil.ReadAll(reader)
+	if err != nil {
+		t.Fatal(err)
+	}
+	reader.Close()
+	if string(actual) != PLS {
 		t.Fatal("actual != expected")
 	}
 }
@@ -77,7 +117,7 @@ var ExpectedSongs = []Song{
 		"Music/David Bowie/Singles 1/03-Starman.ogg", 258},
 }
 
-var ExpectedPls = `[playlist]
+const PLS = `[playlist]
 File1=Music/David Bowie/Singles 1/01-Space Oddity.ogg
 Title1=David Bowie - Space Oddity
 Length1=315
