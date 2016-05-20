@@ -15,3 +15,13 @@ func UniqueInts(input []int) []int {
 	}
 	return uniques
 }
+
+func Flatten(input [][]int) []int {
+	flattened := []int{}
+	for i := range input {
+		for j := range input[i] {
+			flattened = append(flattened, input[i][j])
+		}
+	}
+	return flattened
+}
