@@ -39,20 +39,6 @@ func main() {
 	}
 	args := commandLineFiles(os.Args[1:])
 	archiveFileList := ArchiveFileList
-	if len(args[0]) == 1 && strings.IndexAny(args[0], "12345") != -1 {
-		which := args[0][0]
-		args = args[1:]
-		switch which {
-		case '2':
-			archiveFileList = ArchiveFileList2
-		case '3':
-			archiveFileList = ArchiveFileList3
-		case '4':
-			archiveFileList = ArchiveFileList4
-		case '5':
-			archiveFileList = ArchiveFileListMap
-		}
-	}
 	for _, filename := range args {
 		fmt.Print(filename)
 		lines, err := archiveFileList(filename)
@@ -83,61 +69,6 @@ func commandLineFiles(files []string) []string {
 }
 
 func ArchiveFileList(file string) ([]string, error) {
-	if suffix := Suffix(file); suffix == ".gz" {
-		return GzipFileList(file)
-	} else if suffix == ".tar" || suffix == ".tar.gz" || suffix == ".tgz" {
-		return TarFileList(file)
-	} else if suffix == ".zip" {
-		return ZipFileList(file)
-	}
-	return nil, errors.New("unrecognized archive")
-}
-
-func ArchiveFileList2(file string) ([]string, error) {
-	switch suffix := Suffix(file); suffix { // Naïve and noncanonical!
-	case ".gz":
-		return GzipFileList(file)
-	case ".tar":
-		fallthrough
-	case ".tar.gz":
-		fallthrough
-	case ".tgz":
-		return TarFileList(file)
-	case ".zip":
-		return ZipFileList(file)
-	}
-	return nil, errors.New("unrecognized archive")
-}
-
-func ArchiveFileList3(file string) ([]string, error) {
-	switch Suffix(file) {
-	case ".gz":
-		return GzipFileList(file)
-	case ".tar":
-		fallthrough
-	case ".tar.gz":
-		fallthrough
-	case ".tgz":
-		return TarFileList(file)
-	case ".zip":
-		return ZipFileList(file)
-	}
-	return nil, errors.New("unrecognized archive")
-}
-
-func ArchiveFileList4(file string) ([]string, error) {
-	switch Suffix(file) { // Canonical
-	case ".gz":
-		return GzipFileList(file)
-	case ".tar", ".tar.gz", ".tgz":
-		return TarFileList(file)
-	case ".zip":
-		return ZipFileList(file)
-	}
-	return nil, errors.New("unrecognized archive")
-}
-
-func ArchiveFileListMap(file string) ([]string, error) {
 	if function, ok := FunctionForSuffix[Suffix(file)]; ok {
 		return function(file)
 	}
