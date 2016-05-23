@@ -30,10 +30,13 @@ func init() {
 			if len(s) <= 1 {
 				return true
 			}
-			if s[0] != s[len(s)-1] {
-				return false
+			length := len(s) - 1
+			for i := 0; i <= length/2; i++ {
+				if s[i] != s[length-i] {
+					return false
+				}
 			}
-			return IsPalindrome(s[1 : len(s)-1])
+			return true
 		}
 	} else {
 		IsPalindrome = func(s string) bool { // UTF-8 version
