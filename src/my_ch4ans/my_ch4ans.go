@@ -1,5 +1,9 @@
 package main
 
+import (
+	"strings"
+)
+
 func UniqueInts(input []int) []int {
 	uniques := []int{}
 	counts := make(map[int]int)
@@ -39,4 +43,42 @@ func Make2D(input []int, columns int) [][]int {
 		}
 	}
 	return result
+}
+
+func ParseIni(input []string) map[string]map[string]string {
+	result := make(map[string]map[string]string)
+	currentMap := make(map[string]string)
+	for i := len(input) - 1; i >= 0; i-- {
+		if input[i] == "" || input[i][0] == ';' {
+			continue
+		}
+		if header, ok := getHeader(input[i]); ok {
+			// Store previously built up map using header as key
+			if len(currentMap) > 0 {
+				result[header] = currentMap
+				currentMap = make(map[string]string)
+			}
+		} else {
+			if k, v, ok := getKeyValuePair(input[i]); ok {
+				// Add KV pair to current map
+				currentMap[k] = v
+			}
+		}
+	}
+	return result
+}
+
+func getHeader(line string) (string, bool) {
+	if line[0] == '[' && line[len(line)-1] == ']' {
+		return line[1 : len(line)-1], true
+	} else {
+		return "", false
+	}
+}
+
+func getKeyValuePair(line string) (string, string, bool) {
+	if separated := strings.Split(line, "="); len(separated) == 2 {
+		return separated[0], separated[1], true
+	}
+	return "", "", false
 }

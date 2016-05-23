@@ -64,3 +64,51 @@ func TestMake2D(t *testing.T) {
 		}
 	}
 }
+
+func TestParseIni(t *testing.T) {
+	log.SetFlags(0)
+	log.Println("TEST ParseIni()")
+	iniData := []string{
+		"; Cut down copy of Mozilla application.ini file",
+		"",
+		"[App]",
+		"Vendor=Mozilla",
+		"Name=Iceweasel",
+		"Profile=mozilla/firefox",
+		"Version=3.5.16",
+		"[Gecko]",
+		"MinVersion=1.9.1",
+		"MaxVersion=1.9.1.*",
+		"[XRE]",
+		"EnableProfileMigrator=0",
+		"EnableExtensionManager=1",
+	}
+	expectedOutput := map[string]map[string]string{
+		"Gecko": {
+			"MinVersion": "1.9.1",
+			"MaxVersion": "1.9.1.*",
+		},
+		"XRE": {
+			"EnableProfileMigrator":  "0",
+			"EnableExtensionManager": "1",
+		},
+		"App": {
+			"Vendor":  "Mozilla",
+			"Profile": "mozilla/firefox",
+			"Name":    "Iceweasel",
+			"Version": "3.5.16",
+		},
+	}
+	output := ParseIni(iniData)
+	for k1, v1 := range expectedOutput {
+		if output[k1] == nil {
+			t.Fatalf("Missing top-level key in output: map[%s]", k1)
+		}
+		for k2, v2 := range v1 {
+			if output[k2][v2] != expectedOutput[k2][v2] {
+				t.Fatalf("Missing 2nd-level key in output: map[%s][%s] = %s",
+					k2, v2, expectedOutput[k2][v2])
+			}
+		}
+	}
+}
