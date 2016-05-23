@@ -1,9 +1,5 @@
 package main
 
-// import (
-// 	"fmt"
-// )
-
 func UniqueInts(input []int) []int {
 	uniques := []int{}
 	counts := make(map[int]int)
@@ -24,4 +20,23 @@ func Flatten(input [][]int) []int {
 		}
 	}
 	return flattened
+}
+
+func Make2D(input []int, columns int) [][]int {
+	inputLength := len(input)
+	rows := (inputLength + columns - 1) / columns
+	result := make([][]int, 0)
+	column := []int{}
+	for i := 0; i < rows*columns; i++ {
+		if i+1 <= inputLength {
+			column = append(column, input[i])
+		} else {
+			column = append(column, 0)
+		}
+		if i%columns == columns-1 {
+			result = append(result, column)
+			column = make([]int, 0)
+		}
+	}
+	return result
 }
