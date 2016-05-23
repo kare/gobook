@@ -16,6 +16,7 @@ package main
 import (
 	"archive/tar"
 	"archive/zip"
+	"compress/bzip2"
 	"compress/gzip"
 	"errors"
 	"fmt"
@@ -28,7 +29,7 @@ import (
 
 var FunctionForSuffix = map[string]func(string) ([]string, error){
 	".gz": GzipFileList, ".tar": TarFileList, ".tar.gz": TarFileList,
-	".tgz": TarFileList, ".zip": ZipFileList}
+	".tar.bz2": TarFileList, ".tgz": TarFileList, ".zip": ZipFileList}
 
 func main() {
 	if len(os.Args) == 1 || os.Args[1] == "-h" || os.Args[1] == "--help" {
@@ -128,6 +129,8 @@ func TarFileList(filename string) ([]string, error) {
 			return nil, err
 		}
 		tarReader = tar.NewReader(gzipReader)
+	} else if strings.HasSuffix(filename, ".bz2") {
+		tarReader = tar.NewReader(bzip2.NewReader(reader))
 	} else {
 		tarReader = tar.NewReader(reader)
 	}
