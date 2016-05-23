@@ -112,3 +112,42 @@ func TestParseIni(t *testing.T) {
 		}
 	}
 }
+
+func TestPrintIni(t *testing.T) {
+	log.SetFlags(0)
+	log.Println("TEST PrintIni()")
+	input := map[string]map[string]string{
+		"Gecko": {
+			"MinVersion": "1.9.1",
+			"MaxVersion": "1.9.1.*",
+		},
+		"XRE": {
+			"EnableProfileMigrator":  "0",
+			"EnableExtensionManager": "1",
+		},
+		"App": {
+			"Vendor":  "Mozilla",
+			"Profile": "mozilla/firefox",
+			"Name":    "Iceweasel",
+			"Version": "3.5.16",
+		},
+	}
+	expectedOutput := "[App]\n" +
+		"Name=Iceweasel\n" +
+		"Profile=mozilla/firefox\n" +
+		"Vendor=Mozilla\n" +
+		"Version=3.5.16\n\n" +
+
+		"[Gecko]\n" +
+		"MaxVersion=1.9.1.*\n" +
+		"MinVersion=1.9.1\n\n" +
+
+		"[XRE]\n" +
+		"EnableExtensionManager=1\n" +
+		"EnableProfileMigrator=0\n\n"
+
+	if PrintIni(input) != expectedOutput {
+		t.Fatalf("PrintIni() output different from expected:\n%s\n!=\n%s\n",
+			PrintIni(input), expectedOutput)
+	}
+}

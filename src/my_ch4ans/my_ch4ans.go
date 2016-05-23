@@ -1,6 +1,7 @@
 package main
 
 import (
+	"sort"
 	"strings"
 )
 
@@ -81,4 +82,26 @@ func getKeyValuePair(line string) (string, string, bool) {
 		return separated[0], separated[1], true
 	}
 	return "", "", false
+}
+
+func PrintIni(input map[string]map[string]string) string {
+	var result string
+	topLevelKeys := make([]string, 0, len(input))
+	for topKey := range input {
+		topLevelKeys = append(topLevelKeys, topKey)
+	}
+	sort.Strings(topLevelKeys)
+	for _, topKey := range topLevelKeys {
+		result += "[" + topKey + "]\n"
+		secondLevelKeys := make([]string, 0, len(input[topKey]))
+		for secondLevelKey := range input[topKey] {
+			secondLevelKeys = append(secondLevelKeys, secondLevelKey)
+		}
+		sort.Strings(secondLevelKeys)
+		for _, secondLevelKey := range secondLevelKeys {
+			result += secondLevelKey + "=" + input[topKey][secondLevelKey] + "\n"
+		}
+		result += "\n"
+	}
+	return result
 }
