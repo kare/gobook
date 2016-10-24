@@ -43,6 +43,7 @@ func TestReadM3uPlaylist(t *testing.T) {
 func TestWritePlsPlaylist(t *testing.T) {
     songs := readM3uPlaylist(M3U)
     var err error
+    stdout := os.Stdout
     reader, writer := os.Stdin, os.Stdout
     if reader, writer, err = os.Pipe(); err != nil {
         t.Fatal(err)
@@ -50,6 +51,7 @@ func TestWritePlsPlaylist(t *testing.T) {
     os.Stdout = writer
     writePlsPlaylist(songs)
     writer.Close()
+    os.Stdout = stdout
     actual, err := ioutil.ReadAll(reader)
     if err != nil {
         t.Fatal(err)

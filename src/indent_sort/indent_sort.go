@@ -64,7 +64,9 @@ func SortedIndentedStrings(slice []string) []string {
 
 func populateEntries(slice []string) Entries {
     indent, indentSize := computeIndent(slice)
+    /*
     fmt.Printf("[%s] %d = %d\n", indent, len(indent), indentSize)
+    */
     entries := make(Entries, 0)
     for _, item := range slice {
         i, level := 0, 0
